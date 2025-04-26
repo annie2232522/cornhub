@@ -182,5 +182,15 @@ async function showDetails(item) {
     }
   }
 }
+async function fetchEpisodes(tvId, seasonNumber = 1) {
+  try {
+    const res = await fetch(`${BASE_URL}/tv/${tvId}/season/${seasonNumber}?api_key=${API_KEY}`);
+    const data = await res.json();
+    return data.episodes;
+  } catch (error) {
+    console.error('Error fetching episodes:', error);
+    return [];
+  }
+}
 
     init();
