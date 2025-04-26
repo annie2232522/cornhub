@@ -92,6 +92,9 @@ else if (server === "cdn.lbryplayer.xyz") {
         else if (server === "vidsrc.xyz") {
         embedURL = `https://vidsrc.xyz/${type}/${currentItem.id}`;
       }
+        else if (server === "2anime.xyz") {
+        embedURL = `https://2anime.xyz/${type}/${currentItem.id}`;
+      }
       document.getElementById('modal-video').src = embedURL;
     }
 
