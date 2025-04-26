@@ -65,11 +65,26 @@ const API_KEY = '5b8f641a3427e8cbf2ccf7ca592e66f1';
       } else if (server === "player.videasy.net") {
         embedURL = `https://player.videasy.net/${type}/${currentItem.id}`;
       }
-         else if (server === "vidsrc.xyz") {
-        embedURL = `https://vidsrc.xyz/${type}/${currentItem.id}`;
+         else if (server === "vidlink.pro") {
+        embedURL = `https://vidlink.pro/${type}/${currentItem.id}`;
       }
-        else if (server === "cdn.lbryplayer.xyz") {
-        embedURL = `https://cdn.lbryplayer.xyz/${type}/${currentItem.id}`;
+        else if (server === "vidsrc.dev") {
+        embedURL = `https://vidsrc.dev/${type}/${currentItem.id}`;
+      }
+        else if (server === "111movies.com") {
+        embedURL = `https://111movies.com/${type}/${currentItem.id}`;
+      }
+        else if (server === "vidjoy.pro") {
+        embedURL = `https://vidjoy.pro/${type}/${currentItem.id}`;
+      }
+        else if (server === "vidsrc.io") {
+        embedURL = `https://vidsrc.io/${type}/${currentItem.id}`;
+      }
+        else if (server === "www.2embed.cc") {
+        embedURL = `https://www.2embed.cc/${type}/${currentItem.id}`;
+      }
+        else if (server === "moviesapi.club") {
+        embedURL = `https://moviesapi.club/${type}/${currentItem.id}`;
       }
 
       document.getElementById('modal-video').src = embedURL;
