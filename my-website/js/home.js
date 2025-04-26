@@ -66,25 +66,25 @@ const API_KEY = '5b8f641a3427e8cbf2ccf7ca592e66f1';
         embedURL = `https://player.videasy.net/${type}/${currentItem.id}`;
       }
          else if (server === "vidlink.pro") {
-        embedURL = `https://vidlink.pro/${type}/${currentItem.id}`;
+        embedURL = `https://vidlink.pro/movie/${type}/${currentItem.id}`;
       }
         else if (server === "vidsrc.dev") {
-        embedURL = `https://vidsrc.dev/${type}/${currentItem.id}`;
+        embedURL = `https://vidsrc.dev/embed/movie/${type}/${currentItem.id}`;
       }
         else if (server === "111movies.com") {
-        embedURL = `https://111movies.com/${type}/${currentItem.id}`;
+        embedURL = `https://111movies.com/movie/${type}/${currentItem.id}`;
       }
         else if (server === "vidjoy.pro") {
-        embedURL = `https://vidjoy.pro/${type}/${currentItem.id}`;
+        embedURL = `https://vidjoy.pro/embed/movie/${type}/${currentItem.id}`;
       }
         else if (server === "vidsrc.io") {
-        embedURL = `https://vidsrc.io/${type}/${currentItem.id}`;
+        embedURL = `https://vidsrc.io/embed/movie/${type}/${currentItem.id}`;
       }
         else if (server === "www.2embed.cc") {
         embedURL = `https://www.2embed.cc/embed/${type}/${currentItem.id}`;
       }
         else if (server === "moviesapi.club") {
-        embedURL = `https://moviesapi.club/embed/${type}/${currentItem.id}`;
+        embedURL = `https:///moviesapi.club/movie/${type}/${currentItem.id}`;
       }
 else if (server === "cdn.lbryplayer.xyz") {
         embedURL = `https://cdn.lbryplayer.xyz/embed/${type}/${currentItem.id}`;
