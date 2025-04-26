@@ -52,52 +52,48 @@
   </div>
 
   <div class="modal" id="modal">
-    <div class="modal-content">
-	    <!-- Modal Body -->
-<div class="modal-body">
-  <img id="modal-image" src="" alt="" />
-  <div class="modal-text">
-    <h2 id="modal-title"></h2>
-    <div class="stars" id="modal-rating"></div>
-    <p id="modal-description"></p>
+  <div class="modal-content">
 
-    <!-- 🔥 NEW: Episode List Here -->
-    <div id="episode-list">
-      <!-- Episodes will be loaded here by JavaScript -->
-    </div>
-  </div>
-</div>
-      <span class="close" onclick="closeModal()" style="color: red;">&times;</span>
-      <div class="modal-body">
-  <img id="modal-image" src="" alt="" />
-  <div class="modal-text">
-    <h2 id="modal-title"></h2>
-    <div class="stars" id="modal-rating"></div>
-    <p id="modal-description"></p>
-  </div>
-</div>
-	
-      
-      <div class="server-selector">
-        <label for="server">Change Server:</label>
-        <select id="server" onchange="changeServer()">
-          <option value="player.videasy.net">Player.Videasy.net</option>
-	<option value="vidlink.pro">vidlink.pro</option>
-	<option value="111movies.com">111movies.com</option>
-	<option value="moviesapi.club">moviesapi.club</option>
-		<option value="vidsrc.xyzb">vidsrc.xyz</option>
-		<option value="cdn.lbryplayer.xyz">cdn.lbryplayer.xyz</option>
-		<option value="www.2embed.cc">www.2embed.cc</option>
-		<option value="vidsrc.io">vidsrc.io</option>
-		<option value="vidjoy.pro">vidjoy.pro</option>
-		<option value="vidsrc.me">vidsrc.me</option>
-		<option value="vidsrc.dev">vidsrc.dev</option>
-		<option value="2anime.xyz">2anime.xyz</option>
-        </select>
+    <!-- Modal Close Button -->
+    <span class="close" onclick="closeModal()" style="color: red;">&times;</span>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <img id="modal-image" src="" alt="" />
+      <div class="modal-text">
+        <h2 id="modal-title"></h2>
+        <div class="stars" id="modal-rating"></div>
+        <p id="modal-description"></p>
+
+        <!-- 🔥 New Episode List Container -->
+        <div id="episode-list"></div>
       </div>
-      <iframe id="modal-video" width="100%" height="315" frameborder="0" allowfullscreen></iframe>
     </div>
+
+    <!-- Server Selector -->
+    <div class="server-selector">
+      <label for="server">Change Server:</label>
+      <select id="server" onchange="changeServer()">
+        <option value="player.videasy.net">Player.Videasy.net</option>
+        <option value="vidlink.pro">vidlink.pro</option>
+        <option value="111movies.com">111movies.com</option>
+        <option value="moviesapi.club">moviesapi.club</option>
+        <option value="vidsrc.xyz">vidsrc.xyz</option>
+        <option value="cdn.lbryplayer.xyz">cdn.lbryplayer.xyz</option>
+        <option value="www.2embed.cc">www.2embed.cc</option>
+        <option value="vidsrc.io">vidsrc.io</option>
+        <option value="vidjoy.pro">vidjoy.pro</option>
+        <option value="vidsrc.me">vidsrc.me</option>
+        <option value="vidsrc.dev">vidsrc.dev</option>
+        <option value="2anime.xyz">2anime.xyz</option>
+      </select>
+    </div>
+
+    <!-- Video Frame -->
+    <iframe id="modal-video" width="100%" height="315" frameborder="0" allowfullscreen></iframe>
+
   </div>
+</div>
 
   <div class="search-modal" id="search-modal">
     <span class="close" onclick="closeSearchModal()" style="color: red;">&times;</span>
