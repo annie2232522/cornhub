@@ -61,7 +61,7 @@ const API_KEY = '5b8f641a3427e8cbf2ccf7ca592e66f1';
       if (server === "vidsrc.cc") {
         embedURL = `https://vidsrc.cc/v2/embed/${type}/${currentItem.id}`;
       } else if (server === "vidsrc.me") {
-        embedURL = `https://vidsrc.net/embed/${type}/?tmdb=${currentItem.id}`;
+        embedURL = `https://vidsrc.me/embed/${type}/?tmdb=${currentItem.id}`;
       } else if (server === "player.videasy.net") {
         embedURL = `https://player.videasy.net/${type}/${currentItem.id}`;
       }
@@ -86,7 +86,12 @@ const API_KEY = '5b8f641a3427e8cbf2ccf7ca592e66f1';
         else if (server === "moviesapi.club") {
         embedURL = `https://moviesapi.club/${type}/${currentItem.id}`;
       }
-
+else if (server === "cdn.lbryplayer.xyz") {
+        embedURL = `https://cdn.lbryplayer.xyz/${type}/${currentItem.id}`;
+      }
+        else if (server === "vidsrc.xyz") {
+        embedURL = `https://vidsrc.xyz/${type}/${currentItem.id}`;
+      }
       document.getElementById('modal-video').src = embedURL;
     }
 
