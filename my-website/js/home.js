@@ -81,19 +81,19 @@ const API_KEY = '5b8f641a3427e8cbf2ccf7ca592e66f1';
         embedURL = `https://vidsrc.io/${type}/${currentItem.id}`;
       }
         else if (server === "www.2embed.cc") {
-        embedURL = `https://www.2embed.cc/${type}/${currentItem.id}`;
+        embedURL = `https://www.2embed.cc/embed/${type}/${currentItem.id}`;
       }
         else if (server === "moviesapi.club") {
-        embedURL = `https://moviesapi.club/${type}/${currentItem.id}`;
+        embedURL = `https://moviesapi.club/embed/${type}/${currentItem.id}`;
       }
 else if (server === "cdn.lbryplayer.xyz") {
-        embedURL = `https://cdn.lbryplayer.xyz/${type}/${currentItem.id}`;
+        embedURL = `https://cdn.lbryplayer.xyz/embed/${type}/${currentItem.id}`;
       }
         else if (server === "vidsrc.xyz") {
-        embedURL = `https://vidsrc.xyz/${type}/${currentItem.id}`;
+        embedURL = `https://vidsrc.xyz/embed/${type}/${currentItem.id}`;
       }
         else if (server === "2anime.xyz") {
-        embedURL = `https://2anime.xyz/${type}/${currentItem.id}`;
+        embedURL = `https://2anime.xyz/embed/${type}/${currentItem.id}`;
       }
       document.getElementById('modal-video').src = embedURL;
     }
