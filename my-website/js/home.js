@@ -192,5 +192,39 @@ async function fetchEpisodes(tvId, seasonNumber = 1) {
     return [];
   }
 }
+async function showDetails(item) {
+  currentItem = item;
+
+  document.getElementById('modal-title').textContent = item.title || item.name;
+  document.getElementById('modal-description').textContent = item.overview;
+  document.getElementById('modal-image').src = `${IMG_URL}${item.poster_path}`;
+  document.getElementById('modal-rating').innerHTML = '★'.repeat(Math.round(item.vote_average / 2));
+  changeServer();
+  document.getElementById('modal').style.display = 'flex';
+
+  // Clear previous episodes
+  const episodeList = document.getElementById('episode-list');
+  episodeList.innerHTML = '';
+
+  // 🔥 Load episodes if TV show
+  if (item.media_type === 'tv') {
+    const episodes = await fetchEpisodes(item.id, 1); // Get season 1
+    if (episodes.length > 0) {
+      const title = document.createElement('h3');
+      title.textContent = 'Episodes:';
+      episodeList.appendChild(title);
+
+      episodes.forEach(ep => {
+        const epDiv = document.createElement('div');
+        epDiv.className = 'episode';
+        epDiv.innerHTML = `
+          <strong>Episode ${ep.episode_number}: ${ep.name}</strong>
+          <p>${ep.overview || "No description available."}</p>
+        `;
+        episodeList.appendChild(epDiv);
+      });
+    }
+  }
+}
 
     init();
