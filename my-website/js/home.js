@@ -156,15 +156,7 @@ function changeServer() {
   const server = "vidsrc.me"; // You can extend options later
   const type = currentItem.media_type === 'movie' ? 'movie' : 'tv';
   document.getElementById('modal-video').src = `https://${server}/embed/${type}/${currentItem.id}`;
-
-} else if (server === "vidsrc.me") {
-        embedURL = `https://vidsrc.net/embed/${type}/?tmdb=${currentItem.id}`;
-      } else if (server === "player.videasy.net") {
-        embedURL = `https://player.videasy.net/${type}/${currentItem.id}`;
-      }
-
-      document.getElementById('modal-video').src = embedURL;
-    }
+}
 
 // Close modal
 function closeModal() {
