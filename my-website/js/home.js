@@ -153,9 +153,18 @@ function toggleEpisode(header) {
 
 // Change server (embed player)
 function changeServer() {
-  const server = "vidsrc.me"; // You can extend options later
-  const type = currentItem.media_type === 'movie' ? 'movie' : 'tv';
-  document.getElementById('modal-video').src = `https://${server}/embed/${type}/${currentItem.id}`;
+  const server = [
+    "vidsrc.me",
+    "Player.Videasy.net",
+    "vidsrc.xyz",
+    "vidjoy.pro",
+    ];
+
+  function changeServer(serverIndex = 0) {
+  const server = servers[serverIndex];
+  const type = currentItem.media_type === "movie" ? "movie" : "tv";
+  const src = https://${server}/embed/${type}/${currentItem.id};
+  document.getElementById("modal-video").src = src;
 }
 
 // Close modal
