@@ -152,8 +152,6 @@ function toggleEpisode(header) {
 // Change server (embed player)
 function changeServer() {
   const server = "vidsrc.me"; // You can extend options later
-  const server = "Player.Videasy.net";
-  const server = "vidsrc.xyz";
   const type = currentItem.media_type === 'movie' ? 'movie' : 'tv';
   document.getElementById('modal-video').src = `https://${server}/embed/${type}/${currentItem.id}`;
 }
