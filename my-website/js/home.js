@@ -1,3 +1,5 @@
+// backup
+
 const API_KEY = '5b8f641a3427e8cbf2ccf7ca592e66f1';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_URL = 'https://image.tmdb.org/t/p/original';
@@ -151,13 +153,11 @@ function toggleEpisode(header) {
 
 // Change server (embed player)
 function changeServer() {
-  const server = document.getElementById('server').value;
-      const type = currentItem.media_type === "movie" ? "movie" : "tv";
-      let embedURL = "";
+  const server = "vidsrc.me"; // You can extend options later
+  const type = currentItem.media_type === 'movie' ? 'movie' : 'tv';
+  document.getElementById('modal-video').src = `https://${server}/embed/${type}/${currentItem.id}`;
 
-      if (server === "vidsrc.cc") {
-        embedURL = `https://vidsrc.cc/v2/embed/${type}/${currentItem.id}`;
-      } else if (server === "vidsrc.me") {
+} else if (server === "vidsrc.me") {
         embedURL = `https://vidsrc.net/embed/${type}/?tmdb=${currentItem.id}`;
       } else if (server === "player.videasy.net") {
         embedURL = `https://player.videasy.net/${type}/${currentItem.id}`;
@@ -165,7 +165,6 @@ function changeServer() {
 
       document.getElementById('modal-video').src = embedURL;
     }
-}
 
 // Close modal
 function closeModal() {
