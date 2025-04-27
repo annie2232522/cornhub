@@ -90,8 +90,8 @@ function toggleEpisode(header) {
 let currentServerIndex = 0;
 const servers = [
   "vidsrc.me",
-  "server2.com",
-  "server3.com",
+  "Player.Videasy.net",
+  "vidsrc.xyz",
   // Add more servers here
 ];
 
