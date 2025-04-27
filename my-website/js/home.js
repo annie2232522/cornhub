@@ -1,18 +1,16 @@
-// backup
-
 const API_KEY = '5b8f641a3427e8cbf2ccf7ca592e66f1';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_URL = 'https://image.tmdb.org/t/p/original';
 let currentItem = null;
+let currentServer = "vidsrc.me";
+let currentSeason = 1;
 
-// Fetch trending items by type
 async function fetchTrending(type) {
   const res = await fetch(`${BASE_URL}/trending/${type}/week?api_key=${API_KEY}`);
   const data = await res.json();
   return data.results;
 }
 
-// Fetch trending anime (Japanese TV animation)
 async function fetchTrendingAnime() {
   let allResults = [];
   for (let page = 1; page <= 5; page++) {
@@ -26,27 +24,17 @@ async function fetchTrendingAnime() {
   return allResults;
 }
 
-// Fetch trending K-Drama (Korean TV shows)
-async function fetchTrendingKDrama() {
-  const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}`);
-  const data = await res.json();
-  return data.results.filter(item => item.original_language === 'ko');
-}
-
-// Fetch trending by genre
 async function fetchByGenre(genreId) {
   const res = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`);
   const data = await res.json();
   return data.results;
 }
 
-// Display banner at the top
 function displayBanner(item) {
   document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
   document.getElementById('banner-title').textContent = item.title || item.name;
 }
 
-// Display lists
 function displayList(items, containerId) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
@@ -60,133 +48,89 @@ function displayList(items, containerId) {
   });
 }
 
-// Show detailed modal
 async function showDetails(item) {
   currentItem = item;
-
   document.getElementById('modal-title').textContent = item.title || item.name;
   document.getElementById('modal-description').textContent = item.overview;
   document.getElementById('modal-image').src = `${IMG_URL}${item.poster_path}`;
   document.getElementById('modal-rating').innerHTML = '★'.repeat(Math.round(item.vote_average / 2));
   document.getElementById('modal').style.display = 'flex';
-  changeServer();
 
-  // Reset season/episode pickers
-  document.getElementById('season-picker').innerHTML = '';
-  document.getElementById('episode-picker').innerHTML = '';
-  document.getElementById('episode-list').innerHTML = '';
+  const seasonContainer = document.getElementById('season-picker-container');
+  const serverPicker = document.getElementById('server-picker');
+  currentServer = serverPicker.value;
 
   if (item.media_type === 'tv') {
-    document.getElementById('season-picker-container').style.display = 'block';
-    document.getElementById('episode-picker-container').style.display = 'block';
-    const show = await fetchShowDetails(item.id);
+    seasonContainer.style.display = 'block';
+    const details = await fetch(`${BASE_URL}/tv/${item.id}?api_key=${API_KEY}`).then(res => res.json());
+    const seasonPicker = document.getElementById('season-picker');
+    seasonPicker.innerHTML = '';
 
-    // Populate Season Picker
-    show.seasons.forEach(season => {
+    details.seasons.forEach(season => {
       if (season.season_number === 0) return;
       const option = document.createElement('option');
       option.value = season.season_number;
       option.textContent = `Season ${season.season_number}`;
-      document.getElementById('season-picker').appendChild(option);
+      seasonPicker.appendChild(option);
     });
 
-    await loadSeasonEpisodes();
+    loadEpisodes();
   } else {
-    document.getElementById('season-picker-container').style.display = 'none';
-    document.getElementById('episode-picker-container').style.display = 'none';
+    seasonContainer.style.display = 'none';
+    updateVideo();
   }
 }
 
-// Fetch full show details
-async function fetchShowDetails(tvId) {
-  const res = await fetch(`${BASE_URL}/tv/${tvId}?api_key=${API_KEY}`);
-  return await res.json();
-}
-
-// Fetch episodes by season
-async function fetchEpisodes(tvId, seasonNumber = 1) {
-  const res = await fetch(`${BASE_URL}/tv/${tvId}/season/${seasonNumber}?api_key=${API_KEY}`);
-  const data = await res.json();
-  return data.episodes;
-}
-
-// Load Season episodes into Episode picker
-async function loadSeasonEpisodes() {
+async function loadEpisodes() {
   const seasonNumber = document.getElementById('season-picker').value;
-  const episodes = await fetchEpisodes(currentItem.id, seasonNumber);
+  const res = await fetch(`${BASE_URL}/tv/${currentItem.id}/season/${seasonNumber}?api_key=${API_KEY}`);
+  const data = await res.json();
 
-  const episodePicker = document.getElementById('episode-picker');
-  episodePicker.innerHTML = '';
-  const episodeList = document.getElementById('episode-list');
-  episodeList.innerHTML = '';
+  const container = document.getElementById('episode-buttons');
+  container.innerHTML = '';
+  data.episodes.forEach(ep => {
+    const button = document.createElement('button');
+    button.textContent = `E${ep.episode_number}: ${ep.name}`;
+    button.onclick = () => {
+      currentSeason = seasonNumber;
+      updateVideo(ep.episode_number);
+    };
+    container.appendChild(button);
+  });
+}
 
-  if (episodes.length > 0) {
-    episodes.forEach(ep => {
-      const option = document.createElement('option');
-      option.value = ep.episode_number;
-      option.textContent = `Episode ${ep.episode_number}: ${ep.name}`;
-      episodePicker.appendChild(option);
-
-      const epDiv = document.createElement('div');
-      epDiv.className = 'episode';
-      epDiv.innerHTML = `
-        <div class="episode-header" onclick="toggleEpisode(this)">
-          <strong>Episode ${ep.episode_number}: ${ep.name}</strong>
-          <span class="toggle-icon">+</span>
-        </div>
-        <div class="episode-body">
-          <p>${ep.overview || "No description available."}</p>
-        </div>
-      `;
-      episodeList.appendChild(epDiv);
-    });
+function updateVideo(episodeNumber = 1) {
+  const server = document.getElementById('server-picker').value;
+  let embedUrl = '';
+  if (currentItem.media_type === 'movie') {
+    embedUrl = `https://${server}/embed/movie/${currentItem.id}`;
+  } else {
+    embedUrl = `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}`;
   }
+  document.getElementById('modal-video').src = embedUrl;
 }
 
-// Toggle episode description open/close
-function toggleEpisode(header) {
-  const body = header.nextElementSibling;
-  body.style.display = body.style.display === 'block' ? 'none' : 'block';
-  const icon = header.querySelector('.toggle-icon');
-  icon.textContent = body.style.display === 'block' ? '-' : '+';
-}
-
-// Change server (embed player)
-function changeServer() {
-  const server = "vidsrc.me"; // You can extend options later
-  const type = currentItem.media_type === 'movie' ? 'movie' : 'tv';
-  document.getElementById('modal-video').src = `https://${server}/embed/${type}/${currentItem.id}`;
-}
-
-// Close modal
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
   document.getElementById('modal-video').src = '';
 }
 
-// Open search modal
 function openSearchModal() {
   document.getElementById('search-modal').style.display = 'flex';
-  document.getElementById('search-input').focus();
 }
 
-// Close search modal
 function closeSearchModal() {
   document.getElementById('search-modal').style.display = 'none';
-  document.getElementById('search-results').innerHTML = '';
 }
 
-// Search movies/shows/anime
 async function searchTMDB() {
-  const query = document.getElementById('search-input').value.trim();
-  if (!query) {
-    document.getElementById('search-results').innerHTML = '';
-    return;
-  }
+  const query = document.getElementById('search-bar-modal').value.trim();
+  if (!query) return;
+
   const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
   const data = await res.json();
-  const container = document.getElementById('search-results');
-  container.innerHTML = '';
+  const results = document.getElementById('search-results');
+  results.innerHTML = '';
   data.results.forEach(item => {
     if (!item.poster_path) return;
     const img = document.createElement('img');
@@ -196,25 +140,22 @@ async function searchTMDB() {
       closeSearchModal();
       showDetails(item);
     };
-    container.appendChild(img);
+    results.appendChild(img);
   });
 }
 
-// Initialize the page
 async function init() {
   const movies = await fetchTrending('movie');
-  const tvShows = await fetchTrending('tv');
+  const tvshows = await fetchTrending('tv');
   const anime = await fetchTrendingAnime();
-  const kdrama = await fetchTrendingKDrama();
-  const horror = await fetchByGenre(27); // Horror Genre
-  const action = await fetchByGenre(28); // Action Genre
-  const romance = await fetchByGenre(10749); // Romance Genre
+  const horror = await fetchByGenre(27);
+  const action = await fetchByGenre(28);
+  const romance = await fetchByGenre(10749);
 
   displayBanner(movies[Math.floor(Math.random() * movies.length)]);
   displayList(movies, 'movies-list');
-  displayList(tvShows, 'tvshows-list');
+  displayList(tvshows, 'tvshows-list');
   displayList(anime, 'anime-list');
-  displayList(kdrama, 'kdrama-list');
   displayList(horror, 'horror-list');
   displayList(action, 'action-list');
   displayList(romance, 'romance-list');
