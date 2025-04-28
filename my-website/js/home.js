@@ -1,9 +1,7 @@
 const API_KEY = '5b8f641a3427e8cbf2ccf7ca592e66f1';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_URL = 'https://image.tmdb.org/t/p/original';
-let currentItem = null;
-let currentServer = "vidsrc.me";
-let currentSeason = 1;
+let currentItem;
 
 async function fetchTrending(type) {
   const res = await fetch(`${BASE_URL}/trending/${type}/week?api_key=${API_KEY}`);
@@ -24,12 +22,6 @@ async function fetchTrendingAnime() {
   return allResults;
 }
 
-async function fetchByGenre(genreId) {
-  const res = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`);
-  const data = await res.json();
-  return data.results;
-}
-
 function displayBanner(item) {
   document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
   document.getElementById('banner-title').textContent = item.title || item.name;
@@ -39,7 +31,6 @@ function displayList(items, containerId) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
   items.forEach(item => {
-    if (!item.poster_path) return;
     const img = document.createElement('img');
     img.src = `${IMG_URL}${item.poster_path}`;
     img.alt = item.title || item.name;
@@ -50,23 +41,23 @@ function displayList(items, containerId) {
 
 async function showDetails(item) {
   currentItem = item;
+
   document.getElementById('modal-title').textContent = item.title || item.name;
   document.getElementById('modal-description').textContent = item.overview;
   document.getElementById('modal-image').src = `${IMG_URL}${item.poster_path}`;
   document.getElementById('modal-rating').innerHTML = '★'.repeat(Math.round(item.vote_average / 2));
+  changeServer();
   document.getElementById('modal').style.display = 'flex';
 
-  const seasonContainer = document.getElementById('season-picker-container');
-  const serverPicker = document.getElementById('server-picker');
-  currentServer = serverPicker.value;
+  document.getElementById('episode-list').innerHTML = '';
+  const seasonPicker = document.getElementById('season-picker');
+  seasonPicker.innerHTML = '';
 
   if (item.media_type === 'tv') {
-    seasonContainer.style.display = 'block';
-    const details = await fetch(`${BASE_URL}/tv/${item.id}?api_key=${API_KEY}`).then(res => res.json());
-    const seasonPicker = document.getElementById('season-picker');
-    seasonPicker.innerHTML = '';
+    document.getElementById('season-picker-container').style.display = 'block';
+    const show = await fetchShowDetails(item.id);
 
-    details.seasons.forEach(season => {
+    show.seasons.forEach(season => {
       if (season.season_number === 0) return;
       const option = document.createElement('option');
       option.value = season.season_number;
@@ -74,40 +65,70 @@ async function showDetails(item) {
       seasonPicker.appendChild(option);
     });
 
-    loadEpisodes();
+    await loadSeasonEpisodes();
   } else {
-    seasonContainer.style.display = 'none';
-    updateVideo();
+    document.getElementById('season-picker-container').style.display = 'none';
   }
 }
 
-async function loadEpisodes() {
-  const seasonNumber = document.getElementById('season-picker').value;
-  const res = await fetch(`${BASE_URL}/tv/${currentItem.id}/season/${seasonNumber}?api_key=${API_KEY}`);
+async function fetchShowDetails(tvId) {
+  const res = await fetch(`${BASE_URL}/tv/${tvId}?api_key=${API_KEY}`);
   const data = await res.json();
-
-  const container = document.getElementById('episode-buttons');
-  container.innerHTML = '';
-  data.episodes.forEach(ep => {
-    const button = document.createElement('button');
-    button.textContent = `E${ep.episode_number}: ${ep.name}`;
-    button.onclick = () => {
-      currentSeason = seasonNumber;
-      updateVideo(ep.episode_number);
-    };
-    container.appendChild(button);
-  });
+  return data;
 }
 
-function updateVideo(episodeNumber = 1) {
-  const server = document.getElementById('server-picker').value;
-  let embedUrl = '';
-  if (currentItem.media_type === 'movie') {
-    embedUrl = `https://${server}/embed/movie/${currentItem.id}`;
-  } else {
-    embedUrl = `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}`;
+async function fetchEpisodes(tvId, seasonNumber = 1) {
+  try {
+    const res = await fetch(`${BASE_URL}/tv/${tvId}/season/${seasonNumber}?api_key=${API_KEY}`);
+    const data = await res.json();
+    return data.episodes;
+  } catch (error) {
+    console.error('Error fetching episodes:', error);
+    return [];
   }
-  document.getElementById('modal-video').src = embedUrl;
+}
+
+async function loadSeasonEpisodes() {
+  const seasonNumber = document.getElementById('season-picker').value;
+  const episodeList = document.getElementById('episode-list');
+  episodeList.innerHTML = '';
+
+  const episodes = await fetchEpisodes(currentItem.id, seasonNumber);
+  if (episodes.length > 0) {
+    const title = document.createElement('h3');
+    title.textContent = `Episodes - Season ${seasonNumber}:`;
+    episodeList.appendChild(title);
+
+    episodes.forEach(ep => {
+      const epDiv = document.createElement('div');
+      epDiv.className = 'episode';
+      epDiv.innerHTML = `
+        <div class="episode-header" onclick="toggleEpisode(this)">
+          <strong>Episode ${ep.episode_number}: ${ep.name}</strong>
+          <span class="toggle-icon">+</span>
+        </div>
+        <div class="episode-body">
+          <p>${ep.overview || "No description available."}</p>
+        </div>
+      `;
+      episodeList.appendChild(epDiv);
+    });
+  }
+}
+
+function toggleEpisode(header) {
+  const body = header.nextElementSibling;
+  body.style.display = body.style.display === 'block' ? 'none' : 'block';
+
+  const icon = header.querySelector('.toggle-icon');
+  icon.textContent = body.style.display === 'block' ? '-' : '+';
+}
+
+function changeServer() {
+  const server = document.getElementById('server').value;
+  const type = currentItem.media_type === 'movie' ? 'movie' : 'tv';
+  let embedURL = `https://${server}/embed/${type}/${currentItem.id}`;
+  document.getElementById('modal-video').src = embedURL;
 }
 
 function closeModal() {
@@ -117,20 +138,26 @@ function closeModal() {
 
 function openSearchModal() {
   document.getElementById('search-modal').style.display = 'flex';
+  document.getElementById('search-input').focus();
 }
 
 function closeSearchModal() {
   document.getElementById('search-modal').style.display = 'none';
+  document.getElementById('search-results').innerHTML = '';
 }
 
 async function searchTMDB() {
-  const query = document.getElementById('search-bar-modal').value.trim();
-  if (!query) return;
+  const query = document.getElementById('search-input').value;
+  if (!query.trim()) {
+    document.getElementById('search-results').innerHTML = '';
+    return;
+  }
 
   const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
   const data = await res.json();
-  const results = document.getElementById('search-results');
-  results.innerHTML = '';
+
+  const container = document.getElementById('search-results');
+  container.innerHTML = '';
   data.results.forEach(item => {
     if (!item.poster_path) return;
     const img = document.createElement('img');
@@ -140,25 +167,19 @@ async function searchTMDB() {
       closeSearchModal();
       showDetails(item);
     };
-    results.appendChild(img);
+    container.appendChild(img);
   });
 }
 
 async function init() {
   const movies = await fetchTrending('movie');
-  const tvshows = await fetchTrending('tv');
+  const tvShows = await fetchTrending('tv');
   const anime = await fetchTrendingAnime();
-  const horror = await fetchByGenre(27);
-  const action = await fetchByGenre(28);
-  const romance = await fetchByGenre(10749);
 
   displayBanner(movies[Math.floor(Math.random() * movies.length)]);
   displayList(movies, 'movies-list');
-  displayList(tvshows, 'tvshows-list');
+  displayList(tvShows, 'tvshows-list');
   displayList(anime, 'anime-list');
-  displayList(horror, 'horror-list');
-  displayList(action, 'action-list');
-  displayList(romance, 'romance-list');
 }
 
 init();
