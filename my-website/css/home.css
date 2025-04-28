@@ -3,9 +3,8 @@
 
     .navbar {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 10px; background: #000;
+      padding: 10px; background: #222;
     }
-.logo {font-size:24px;color:red;font-weight:bold;}
 
     .navbar img { height: 40px; }
     .nav-links { display: flex; align-items: center; gap: 10px; }
@@ -284,5 +283,4 @@
     flex-direction: row;
     gap: 8px;
   }
- 
 }
